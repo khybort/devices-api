@@ -1,0 +1,44 @@
+[tool.poetry]
+name = "gps-devices-api"
+version = "0.1.0"
+description = "GPS Devices API"
+authors = ["Muhsin KILIÇ <kmuhsinn@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+sqlalchemy = "^2.0.29"
+fastapi = "^0.110.1"
+uvicorn = "^0.29.0"
+pydantic = "^2.6.4"
+ipdb = "^0.13.13"
+psycopg2-binary = "^2.9.9"
+pydantic-settings = "^2.2.1"
+
+
+[tool.poetry.group.dev.dependencies]
+rich = "^13.7.1"
+typer = "==0.9.0"
+commitizen = "^3.20.0"
+pre-commit = "^3.7.0"
+pytest = "^8.1.1"
+autoflake = "^2.3.1"
+isort = "^5.13.2"
+black = "^24.3.0"
+ipdb = "^0.13.13"
+pylint = "^3.1.0"
+pytest-cov = "^5.0.0"
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "$version"
+version_scheme = "pep440"
+version_provider = "poetry"
+update_changelog_on_bump = true
+major_version_zero = true
+
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

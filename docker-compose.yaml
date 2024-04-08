@@ -1,0 +1,105 @@
+version: '3.5'
+
+services:
+  database:
+    image: postgres:alpine
+    restart: on-failure
+    container_name: database
+    ports:
+      - '${DB_PORT}:${DB_PORT}'
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_HOST: ${DB_HOST}
+      POSTGRES_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASSWORD}
+    volumes:
+      - database:/var/lib/postgresql
+      - ./init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh:ro
+      - ./init-table-db.sh:/docker-entrypoint-initdb.d/init-table-db.sh:ro
+
+  tcp-server:
+    build: ./tcp_server
+    container_name: tcp-server
+    restart: on-failure
+    volumes:
+      - ./tcp_server:/app
+      - ./devices_api/core/logger.py:/app/logger.py
+    ports:
+      - '${TCP_SERVER_PORT}:${TCP_SERVER_PORT}'
+    depends_on:
+      database:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    env_file:
+      - .env
+  db-writer:
+    build: ./db_writer
+    container_name: db-writer
+    restart: on-failure
+    volumes:
+      - ./devices_api/core/logger.py:/app/logger.py
+    depends_on:
+      database:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+      tcp-server:
+        condition: service_started
+    env_file:
+      - .env
+  fake-gps-data-generator:
+    build: ./fake_gps_data_generator
+    container_name: fake-gps-data-generator
+    restart: on-failure
+    volumes:
+      - ./devices_api/core/logger.py:/app/logger.py
+    depends_on:
+      database:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+      tcp-server:
+        condition: service_started
+    env_file:
+      - .env
+  rabbitmq:
+    image: rabbitmq
+    container_name: rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+    ports:
+        - ${RABBITMQ_PORT}:${RABBITMQ_PORT}  # AMQP
+        - 15672:15672  # Web UI
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+  devices_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: devices_app
+    restart: on-failure
+    stdin_open: true
+    tty: true
+    depends_on:
+      database:
+        condition: service_started
+    volumes:
+      - .:/app
+    ports:
+      - "${FASTAPI_PORT}:${FASTAPI_PORT}"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://${FASTAPI_HOST}:${FASTAPI_PORT}/health"]
+      interval: 30s 
+      timeout: 10s
+
+volumes:
+  database:
