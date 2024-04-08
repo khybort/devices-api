@@ -1,0 +1,10 @@
+./tcp_server/tcp_server.log
+./db_writer/db_writer.log
+
+
+__pycache__/
+
+**.log
+**.pyc
+
+.env
