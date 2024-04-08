@@ -1,0 +1,51 @@
+repos:
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v3.20.0
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]
+
+  - repo: local
+    hooks:
+      - id: autoflake
+        name: autoflake
+        entry: autoflake
+        language: python
+        types: [python]
+        args: [--remove-all-unused-imports, -i]
+        stages: [pre-commit]
+
+      - id: isort
+        name: isort
+        entry: isort
+        language: python
+        types: [python]
+        args: ["--profile", "black", "--filter-files"]
+        stages: [pre-commit]
+
+      - id: black
+        name: black
+        entry: black
+        language: python
+        types: [python]
+        stages: [pre-commit]
+
+      # see: https://pylint.pycqa.org/en/latest/user_guide/installation/pre-commit-integration.html
+      - id: pylint
+        name: pylint
+        entry: pylint
+        language: system
+        types: [python]
+        stages: [pre-commit]
+        exclude: migrations
+        args: [
+            "-rn", # Only display messages
+            "-sn", # Don't display the score
+            "--rcfile=.pylintrc", # Link to your config file
+          ]
+
+      - id: migration_seed_check
+        name: migration_seed_check
+        entry: ./utils/git/hooks/migration_seed_check.sh
+        language: system
+        stages: [pre-commit]

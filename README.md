@@ -1,11 +1,15 @@
 # GPS Devices Rest API
-This API is used to manage GPS devices. GPS devices can be added, updated, deleted, and retrieved. Clean Architecture implemented with Dependency Injection in FastAPI. This app uses RabbitMQ as message broker, and PostgreSQL as database. It also uses TCP Socket for communication. Soft delete implemented as deletion pattern.
+
+This API facilitates the management of GPS devices, offering functionalities for addition, updating, deletion, and retrieval operations. Implemented within the framework of Clean Architecture with Dependency Injection in FastAPI, the application seamlessly integrates RabbitMQ as a message broker and PostgreSQL as the underlying database. Moreover, TCP Socket communication is leveraged for efficient data exchange. Soft deletion is implemented, adhering to the deletion pattern for enhanced data management.
+
+![Project Diagram](image.png)
+
 
 # Features
-Fake GPS devices are generated using Faker.
-Transfer fake data with TCP Socket.
-Consume data from RabbitMQ.
-Write data to PostgreSQL.
+- Fake GPS devices are generated using Faker.
+- Transfer fake data with TCP Socket.
+- Consume data from RabbitMQ.
+- Write data to PostgreSQL.
 
 ## Features of Devices API:
 - Add device
@@ -23,22 +27,38 @@ Write data to PostgreSQL.
 - PostgreSQL
 - Docker
 - Docker Compose
+- Poetry
 
 ## Prerequisites
 - Docker
 - Make
 - Docker Compose
 
+## API Architecture
+Directory structure based on [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+
 
 ## Installation
-make build-dev
-make up
+- make build-dev
+- make up
 
 ## Usage
-http://localhost:8000
+- http://localhost:8000/api/v1/gps-devices  GET
+- http://localhost:8000/api/v1/gps-devices/{device_id}  GET
+- http://localhost:8000/api/v1/gps-devices  POST  payload = {"name": "example"}
+- http://localhost:8000/api/v1/gps-devices/{device_id}/last-locations  GET
+- http://localhost:8000/api/v1/gps-devices/{device_id}  DELETE
 
 # DOCS
-http://localhost:8000/docs
-http://localhost:8000/redoc
+- http://localhost:8000/docs
+- http://localhost:8000/redoc
 
+## What features could be improved?
+- Error handling
+- Logging
+- Caching
+- Testing
+- Pagination
+- Authentication
+- Authorization
 
